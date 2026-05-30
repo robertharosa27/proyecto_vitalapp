@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VitalApp — Prototipo Interactivo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+:root {
+  --blue: #5bc4f5;
+  --blue-dark: #3aaee0;
+  --blue-deep: #1a6fa8;
+  --coral: #e8523a;
+  --purple: #5c4ec4;
+  --purple-light: #eeedfe;
+  --purple-mid: #534ab7;
+  --red-sos: #d42e0a;
+  --green: #0f6e56;
+  --green-light: #e1f5ee;
+  --amber: #ba7517;
+  --amber-light: #faeeda;
+  --danger: #a32d2d;
+  --danger-light: #fcebeb;
+  --surface: #f2f4f8;
+  --border: #e4e4e4;
+  --text: #111;
+  --text-muted: #777;
+  --text-hint: #aaa;
+  --white: #fff;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+  --font: 'DM Sans', system-ui, sans-serif;
+  --font-serif: 'DM Serif Display', Georgia, serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+.chip, .pc, .ni, .ct, .chk-item, .abs-btn, .ptab, .tw-opt, .npill { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: var(--font);
+  background: #e8ecf2;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem 3rem;
+}
+
+/* ── HEADER ── */
+.app-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+.app-title {
+  font-family: var(--font-serif);
+  font-size: 2.2rem;
+  color: var(--blue-deep);
+  letter-spacing: -0.5px;
+}
+.app-tagline {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+  font-weight: 300;
+}
+
+/* ── NAV PILLS ── */
+.nav-pills {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 1.25rem;
+}
+.npill {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid #ccd0d8;
+  background: #fff;
+  color: #555;
+  transition: all .15s;
+  font-family: var(--font);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.npill i { font-size: 15px; }
+.npill:hover { background: #f0f2f6; }
+.npill.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+.npill.active.comm { background: var(--purple); border-color: var(--purple); }
+.npill.active.prem { background: var(--blue-deep); border-color: var(--blue-deep); }
+
+/* ── PHONE SHELL ── */
+.phone-wrap { display: flex; justify-content: center; }
+.phone {
+  width: 340px;
+  background: #0d0d0d;
+  border-radius: 48px;
+  padding: 12px;
+  box-shadow:
+    0 0 0 1px #1a1a1a,
+    inset 0 0 0 1px #2a2a2a,
+    0 24px 64px rgba(0,0,0,.35),
+    0 8px 24px rgba(0,0,0,.2);
+  position: relative;
+}
+.phone::before {
+  content: '';
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90px;
+  height: 6px;
+  background: #1a1a1a;
+  border-radius: 3px;
+  z-index: 10;
+}
+.screen {
+  width: 100%;
+  height: 660px;
+  border-radius: 38px;
+  overflow: hidden;
+  position: relative;
+  background: var(--surface);
+}
+
+/* ── PAGES ── */
+.sp { position: absolute; inset: 0; display: none; flex-direction: column; overflow: hidden; }
+.sp.active { display: flex; }
+
+/* status bar */
+.sb {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 18px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  flex-shrink: 0;
+  letter-spacing: .2px;
+}
+.sb.w { color: #fff; }
+.sb.d { color: var(--text); }
+
+.pscr { flex: 1; overflow-y: auto; scrollbar-width: none; }
+.pscr::-webkit-scrollbar { display: none; }
+
+/* ── HOME ── */
+.h-hdr {
+  background: var(--blue-deep);
+  padding: 4px 18px 18px;
+}
+.h-greet { font-size: 13px; color: rgba(255,255,255,.7); font-weight: 300; }
+.h-name { font-size: 22px; font-weight: 600; color: #fff; letter-spacing: -.3px; }
+
+.sos-section {
+  background: var(--blue-deep);
+  padding: 20px 18px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.sos-btn {
+  width: 96px; height: 96px;
+  border-radius: 50%;
+  background: var(--red-sos);
+  border: 3px solid rgba(255,255,255,.25);
+  box-shadow: 0 0 0 10px rgba(212,46,10,.18);
+  cursor: pointer;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 2px;
+  transition: transform .1s, box-shadow .1s;
+  user-select: none;
+}
+.sos-btn:active { transform: scale(.91); box-shadow: 0 0 0 6px rgba(212,46,10,.25); }
+.sos-btn { user-select: none; -webkit-user-select: none; touch-action: none; -webkit-touch-callout: none; }
+.sos-lbl { font-size: 24px; font-weight: 700; color: #fff; letter-spacing: 2px; }
+.sos-sub { font-size: 9px; color: rgba(255,255,255,.75); letter-spacing: .5px; }
+.sos-hint { font-size: 11px; color: rgba(255,255,255,.6); text-align: center; font-weight: 300; }
+
+.pillars { padding: 14px; display: flex; flex-direction: column; gap: 9px; }
+.pc {
+  background: var(--white);
+  border-radius: var(--radius-md);
+  padding: 13px 14px;
+  display: flex; align-items: center; gap: 12px;
+  cursor: pointer;
+  border: .5px solid var(--border);
+  transition: transform .1s;
+}
+.pc:active { transform: scale(.98); }
+.pi { width: 42px; height: 42px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.pt-name { font-size: 13.5px; font-weight: 600; color: var(--text); }
+.pt-desc { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+.pc-arrow { margin-left: auto; color: #ccc; font-size: 16px; }
+
+.qbar { padding: 0 14px 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.qc { background: var(--white); border-radius: 11px; padding: 12px; border: .5px solid var(--border); cursor: pointer; }
+.qi { font-size: 19px; margin-bottom: 4px; }
+.qt { font-size: 12px; font-weight: 600; color: var(--text); }
+.qd { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+
+/* ── TRIAGE ── */
+.t-hdr { background: var(--blue-deep); padding: 6px 16px 14px; color: #fff; flex-shrink: 0; }
+.t-hdr h2 { font-size: 17px; font-weight: 600; letter-spacing: -.2px; }
+.t-hdr p { font-size: 11px; opacity: .75; margin-top: 2px; font-weight: 300; }
+.back-btn { font-size: 19px; cursor: pointer; opacity: .9; margin-right: 6px; }
+
+.t-body { padding: 14px; display: flex; flex-direction: column; gap: 11px; }
+.ai-bbl {
+  background: var(--white);
+  border-radius: 14px 14px 14px 3px;
+  padding: 11px 13px;
+  font-size: 13px; line-height: 1.55; color: var(--text);
+  border: .5px solid var(--border);
+  max-width: 276px;
+}
+.ai-badge { display: flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; color: var(--blue); margin-bottom: 5px; }
+.u-bbl {
+  background: var(--blue);
+  border-radius: 14px 14px 3px 14px;
+  padding: 10px 13px;
+  font-size: 13px; color: #fff;
+  max-width: 228px; align-self: flex-end;
+}
+.chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+.chip {
+  background: #e6f1fb; color: #185fa5;
+  font-size: 11px; font-weight: 500;
+  padding: 5px 10px; border-radius: 18px;
+  cursor: pointer; border: .5px solid #b5d4f4;
+  transition: background .12s;
+}
+.chip:hover { background: #c8e0f5; }
+.chip.sel { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+.sev-card { background: var(--white); border-radius: 11px; padding: 11px 13px; border: .5px solid var(--border); }
+.sev-lbl { font-size: 12px; color: #555; margin-bottom: 6px; display: flex; justify-content: space-between; }
+.sev-lbl span:last-child { font-weight: 600; color: var(--blue); }
+.sev-row { display: flex; gap: 4px; }
+.sd { flex: 1; height: 6px; border-radius: 3px; background: #e8e8e8; cursor: pointer; transition: background .1s; }
+.sev-scale { font-size: 10px; color: var(--text-hint); margin-top: 4px; display: flex; justify-content: space-between; }
+
+.alerta-box { border-radius: 11px; padding: 11px 13px; }
+.alerta-box.verde { background: #eaf3de; border: 1px solid #c0dd97; }
+.alerta-box.amarillo { background: var(--amber-light); border: 1px solid #f4c060; }
+.alerta-box.rojo { background: var(--danger-light); border: 1px solid #f09595; }
+.a-title { font-size: 12.5px; font-weight: 600; margin-bottom: 3px; }
+.a-body { font-size: 12px; line-height: 1.5; }
+.verde .a-title { color: #3b6d11; } .verde .a-body { color: #444; }
+.amarillo .a-title { color: var(--amber); } .amarillo .a-body { color: #555; }
+.rojo .a-title { color: var(--danger); } .rojo .a-body { color: #555; }
+
+.t-inp-row {
+  display: flex; gap: 8px;
+  padding: 10px 14px;
+  border-top: .5px solid var(--border);
+  background: var(--white); flex-shrink: 0;
+}
+.t-inp {
+  flex: 1; border: .5px solid #ddd;
+  border-radius: 20px; padding: 8px 14px;
+  font-size: 13px; outline: none;
+  background: var(--surface);
+  font-family: var(--font);
+}
+.t-inp:focus { border-color: var(--blue); }
+.t-snd {
+  width: 36px; height: 36px;
+  background: var(--blue); border: none; border-radius: 50%;
+  color: #fff; font-size: 15px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ── COMMUNITY ── */
+.c-hdr { background: var(--purple); padding: 6px 16px 14px; color: #fff; flex-shrink: 0; }
+.c-hdr h2 { font-size: 17px; font-weight: 600; letter-spacing: -.2px; }
+.c-hdr p { font-size: 11px; opacity: .75; margin-top: 2px; font-weight: 300; }
+
+.safe-strip {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--green-light); padding: 7px 14px;
+  font-size: 11px; color: var(--green); flex-shrink: 0;
+  font-weight: 500;
+}
+.c-tabs { display: flex; background: var(--white); border-bottom: .5px solid var(--border); flex-shrink: 0; }
+.ct {
+  flex: 1; padding: 10px 0;
+  font-size: 11px; font-weight: 500; color: var(--text-hint);
+  text-align: center; cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color .12s;
+  font-family: var(--font);
+}
+.ct.active { color: var(--purple); border-bottom-color: var(--purple); }
+
+.c-feed { padding: 11px; display: flex; flex-direction: column; gap: 9px; }
+.post { background: var(--white); border-radius: var(--radius-md); padding: 13px; border: .5px solid var(--border); }
+.ph { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+.av { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.un { font-size: 13px; font-weight: 600; color: var(--text); }
+.pt2 { font-size: 10.5px; color: var(--text-hint); margin-left: auto; }
+.tag { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 9px; margin-bottom: 5px; }
+.tag.anx { background: var(--purple-light); color: var(--purple-mid); }
+.tag.rec { background: var(--green-light); color: var(--green); }
+.tag.due { background: var(--amber-light); color: var(--amber); }
+.pbody { font-size: 13px; color: var(--text); line-height: 1.5; }
+.pact { display: flex; gap: 14px; margin-top: 9px; }
+.pact-btn { display: flex; align-items: center; gap: 3px; font-size: 12px; color: #888; cursor: pointer; font-family: var(--font); }
+.pact-btn:hover { color: var(--purple); }
+
+/* affirmation */
+.aff-card { background: var(--purple-light); border-radius: var(--radius-md); padding: 13px; }
+.aff-title { font-size: 11px; font-weight: 600; color: var(--purple-mid); margin-bottom: 4px; }
+.aff-text { font-family: var(--font-serif); font-size: 14px; color: #26215c; line-height: 1.5; font-style: italic; }
+
+/* progress */
+.streak-card { background: var(--white); border-radius: var(--radius-md); padding: 13px; border: .5px solid var(--border); }
+.str-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 9px; }
+.str-title { font-size: 13px; font-weight: 600; color: var(--text); }
+.str-count { font-size: 22px; font-weight: 700; color: var(--purple); }
+.str-sub { font-size: 10px; color: var(--text-hint); text-align: right; }
+.week-dots { display: flex; gap: 5px; }
+.wd { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; flex-direction: column; gap: 0; }
+.wd.done { background: var(--green-light); color: var(--green); }
+.wd.miss { background: var(--danger-light); color: var(--danger); }
+.wd.today { background: var(--purple); color: #fff; }
+.wd.empty { background: var(--surface); color: var(--text-hint); }
+
+.logros-card { background: var(--white); border-radius: var(--radius-md); padding: 13px; border: .5px solid var(--border); }
+.logros-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 9px; }
+.chk-item { display: flex; align-items: center; gap: 8px; font-size: 12.5px; cursor: pointer; margin-bottom: 7px; user-select: none; }
+.chk-box {
+  width: 19px; height: 19px; border-radius: 6px;
+  border: 1.5px solid #ddd; background: var(--white);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: background .12s, border-color .12s;
+}
+.chk-box.done { background: var(--purple); border-color: var(--purple); }
+.chk-lbl { color: var(--text); }
+.chk-lbl.done { color: var(--text-hint); text-decoration: line-through; }
+.add-logro-btn {
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+  width: 100%; padding: 8px;
+  border: 1px dashed #afa9ec; border-radius: 9px;
+  background: transparent; font-size: 12px; color: var(--purple);
+  cursor: pointer; margin-top: 5px; font-family: var(--font);
+  transition: background .12s;
+}
+.add-logro-btn:hover { background: var(--purple-light); }
+.add-panel { display: none; margin-top: 9px; padding-top: 9px; border-top: .5px solid var(--border); }
+.add-panel.open { display: block; }
+.add-panel-hint { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; }
+.logro-chip {
+  display: inline-block; font-size: 11px;
+  padding: 5px 10px; border-radius: 18px;
+  border: .5px solid #afa9ec; background: var(--purple-light);
+  color: var(--purple-mid); cursor: pointer;
+  margin: 3px 3px 0 0; transition: background .12s;
+}
+.logro-chip.sel { background: var(--purple); color: #fff; border-color: var(--purple); }
+
+/* abstinencia */
+.abs-card { background: var(--purple-light); border-radius: var(--radius-md); padding: 13px; border: .5px solid #afa9ec; }
+.abs-title { font-size: 13px; font-weight: 600; color: var(--purple-mid); margin-bottom: 1px; }
+.abs-sub { font-size: 11px; color: var(--purple-mid); margin-bottom: 11px; font-weight: 300; }
+.abs-main-row { display: flex; gap: 9px; align-items: stretch; margin-bottom: 10px; }
+.abs-btn {
+  flex: 1; border-radius: 10px; border: 1px solid #afa9ec;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 12px 6px; cursor: pointer; background: #fff;
+  transition: background .15s, border-color .15s; user-select: none;
+}
+.abs-btn:hover { background: #f5f3ff; }
+.abs-btn.yes { background: var(--green-light); border-color: #5dcaa5; }
+.abs-btn.no { background: var(--danger-light); border-color: #f09595; }
+.abs-ico { font-size: 28px; margin-bottom: 3px; }
+.abs-lbl { font-size: 10.5px; font-weight: 600; color: var(--purple-mid); }
+.abs-btn.yes .abs-lbl { color: var(--green); }
+.abs-btn.no .abs-lbl { color: var(--danger); }
+.abs-counters { flex: 1; display: flex; flex-direction: column; gap: 6px; justify-content: center; }
+.abs-c { background: #fff; border-radius: 8px; padding: 7px 8px; text-align: center; }
+.abs-n { font-size: 20px; font-weight: 700; color: #26215c; }
+.abs-l { font-size: 10px; color: var(--purple-mid); }
+.abs-quote { font-family: var(--font-serif); font-size: 12px; color: var(--purple-mid); text-align: center; font-style: italic; margin-bottom: 9px; line-height: 1.4; }
+.abs-expand {
+  display: flex; align-items: center; justify-content: space-between;
+  cursor: pointer; padding: 7px 0;
+  border-top: .5px solid #afa9ec;
+}
+.abs-expand-lbl { font-size: 12px; font-weight: 500; color: var(--purple-mid); }
+.abs-expand i { font-size: 15px; color: var(--purple-mid); transition: transform .2s; }
+.cal-wrap { display: none; margin-top: 10px; }
+.cal-wrap.open { display: block; }
+.cal-month-title { font-size: 10.5px; font-weight: 600; color: var(--purple-mid); margin: 8px 0 4px; }
+.cal-month-title:first-child { margin-top: 0; }
+.cal-days { display: flex; flex-wrap: wrap; gap: 3px; }
+.cd { width: 17px; height: 17px; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 700; }
+.cd.g { background: var(--green-light); color: var(--green); }
+.cd.r { background: var(--danger-light); color: var(--danger); }
+.cd.e { background: rgba(0,0,0,.05); color: #bbb; }
+
+/* ── PREMIUM ── */
+.p-hdr { background: var(--blue-deep); padding: 6px 16px 14px; color: #fff; flex-shrink: 0; }
+.p-hdr h2 { font-size: 17px; font-weight: 600; letter-spacing: -.2px; }
+.p-hdr p { font-size: 11px; opacity: .75; margin-top: 2px; font-weight: 300; }
+
+.p-body { padding: 13px; display: flex; flex-direction: column; gap: 11px; }
+
+.hw-toggle { display: flex; background: #e4e8ef; border-radius: 11px; padding: 3px; }
+.tw-opt {
+  flex: 1; padding: 8px 6px; text-align: center;
+  font-size: 12px; font-weight: 500; color: #666;
+  border-radius: 9px; cursor: pointer;
+  transition: background .15s, color .15s;
+  font-family: var(--font);
+}
+.tw-opt.active { background: var(--white); color: var(--blue-deep); }
+
+.hw-banner {
+  display: flex; align-items: center; gap: 10px;
+  background: #e6f1fb; border-radius: 11px; padding: 10px 12px;
+}
+.hw-banner-ico { font-size: 24px; flex-shrink: 0; }
+.hw-banner-txt { font-size: 12px; color: #0c447c; line-height: 1.45; }
+.hw-banner-txt strong { font-weight: 600; }
+
+.plan-tabs { display: flex; gap: 7px; }
+.ptab {
+  flex: 1; border-radius: 11px; padding: 10px 6px;
+  border: .5px solid var(--border); cursor: pointer;
+  text-align: center; background: var(--white);
+  transition: border-color .15s;
+}
+.ptab.sel { border: 2px solid var(--blue-deep); background: #edf5fd; }
+.ptab-name { font-size: 11.5px; font-weight: 600; color: var(--text); }
+.ptab-price { font-size: 18px; font-weight: 700; color: var(--blue-deep); margin: 3px 0 1px; }
+.ptab-sub { font-size: 10px; color: var(--text-muted); }
+.ptab-badge {
+  font-size: 9.5px; background: var(--blue); color: #fff;
+  border-radius: 5px; padding: 1px 6px; margin-top: 4px;
+  display: inline-block;
+}
+
+.plan-detail { background: var(--white); border-radius: var(--radius-md); padding: 13px; border: .5px solid var(--border); }
+.pd-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 9px; }
+.feat-row { display: flex; align-items: flex-start; gap: 7px; font-size: 12px; color: #444; margin-bottom: 6px; line-height: 1.4; }
+.feat-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+.note-box { background: var(--purple-light); border-radius: 9px; padding: 9px 11px; font-size: 11.5px; color: var(--purple-mid); line-height: 1.5; margin-top: 6px; }
+.consult-box { background: #fff8ed; border-radius: 9px; padding: 9px 11px; font-size: 11.5px; color: #7a4a00; line-height: 1.5; margin-top: 6px; border: 1px solid #f4c060; }
+
+.p-cta {
+  background: var(--blue-deep); color: #fff; border: none;
+  border-radius: 12px; padding: 14px;
+  font-size: 15px; font-weight: 600; width: 100%;
+  cursor: pointer; font-family: var(--font);
+  letter-spacing: -.2px;
+  transition: background .15s;
+}
+.p-cta:hover { background: var(--blue-dark); }
+
+/* ── BOTTOM NAV ── */
+.bnav {
+  display: flex; background: var(--white);
+  border-top: .5px solid var(--border);
+  padding: 8px 0 10px; flex-shrink: 0;
+}
+.ni {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; gap: 2px;
+  cursor: pointer; padding: 3px 0;
+}
+.ni i { font-size: 22px; color: #ccc; transition: color .12s; }
+.ni span { font-size: 10px; color: #ccc; transition: color .12s; font-weight: 500; }
+.ni.active i, .ni.active span { color: var(--blue-deep); }
+.ni:nth-child(3).active i, .ni:nth-child(3).active span { color: var(--purple); }
+.ni:nth-child(4).active i, .ni:nth-child(4).active span { color: var(--blue-deep); }
+
+/* ── INFO FOOTER ── */
+.info-footer {
+  margin-top: 1.5rem;
+  max-width: 340px;
+  background: #fff;
+  border-radius: var(--radius-lg);
+  padding: 1.1rem 1.3rem;
+  border: .5px solid #dde0e8;
+}
+.info-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+.info-row { display: flex; align-items: baseline; gap: 7px; font-size: 12px; color: #555; padding: 4px 0; border-bottom: .5px solid #f0f0f0; }
+.info-row:last-child { border-bottom: none; }
+.info-row i { font-size: 14px; color: var(--blue); flex-shrink: 0; }
+/* ── TYPING INDICATOR ── */
+.typing-indicator {
+  display: flex; align-items: center; gap: 4px;
+  padding: 12px 16px; min-width: 54px;
+}
+.typing-indicator span {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #bbb; display: inline-block;
+  animation: typingBounce 1.2s infinite ease-in-out;
+}
+.typing-indicator span:nth-child(2) { animation-delay: .2s; }
+.typing-indicator span:nth-child(3) { animation-delay: .4s; }
+@keyframes typingBounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: .4; }
+  30% { transform: translateY(-5px); opacity: 1; }
+}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <svg viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg" style="width:260px;height:80px;display:block;margin:0 auto 2px">
+    <text x="10" y="80" font-family="'DM Sans',Arial,sans-serif" font-weight="700" font-size="96" fill="#5bc4f5" letter-spacing="-2">VitalApp</text>
+    <text x="80" y="138" font-family="'DM Sans',Arial,sans-serif" font-weight="400" font-size="28" fill="#e8523a" letter-spacing=".5">La Salud</text>
+    <text x="222" y="138" font-family="'DM Sans',Arial,sans-serif" font-weight="400" font-size="28" fill="#5bc4f5" letter-spacing=".5"> nos Conecta</text>
+  </svg>
+  <div class="app-tagline">Prototipo interactivo · v0.1</div>
+</div>
+
+<div class="nav-pills">
+  <span class="npill active" id="pill-home" onclick="goTo('home')"><i class="ti ti-home-2"></i> Inicio</span>
+  <span class="npill" id="pill-triage" onclick="goTo('triage')"><i class="ti ti-heartbeat"></i> IA Salud</span>
+  <span class="npill comm" id="pill-community" onclick="goTo('community')"><i class="ti ti-heart-handshake"></i> Comunidad</span>
+  <span class="npill prem" id="pill-premium" onclick="goTo('premium')"><i class="ti ti-crown"></i> Premium</span>
+</div>
+
+<div class="phone-wrap">
+<div class="phone">
+<div class="screen">
+
+<!-- ══ HOME ══ -->
+<div class="sp active" id="page-home">
+  <div class="sb w" style="background:var(--blue-deep)">9:41 <span style="margin-left:auto">📶 🔋</span></div>
+  <div class="pscr">
+    <div class="h-hdr">
+      <div class="h-greet">Buenos días,</div>
+      <div class="h-name">María 👋</div>
+    </div>
+    <div class="sos-section">
+      <div class="sos-btn" id="sos-btn" onmousedown="startSOS(event)" onmouseup="cancelSOS()" ontouchstart="startSOS(event)" ontouchend="cancelSOS()" oncontextmenu="return false">
+        <span class="sos-lbl">SOS</span>
+        <span class="sos-sub">PULSA AQUÍ</span>
+      </div>
+      <div class="sos-hint">Emergencia · Alerta inmediata a familia y servicios</div>
+    </div>
+    <div class="pillars">
+      <div class="pc" onclick="goTo('triage')">
+        <div class="pi" style="background:#e8f8ff"><i class="ti ti-heartbeat" style="font-size:20px;color:var(--blue-deep)"></i></div>
+        <div><div class="pt-name">Asistente de Triaje IA</div><div class="pt-desc">Evaluación clínica 24/7 · Gratis</div></div>
+        <i class="ti ti-chevron-right pc-arrow"></i>
+      </div>
+      <div class="pc" onclick="goTo('community')">
+        <div class="pi" style="background:var(--purple-light)"><i class="ti ti-heart-handshake" style="font-size:20px;color:var(--purple-mid)"></i></div>
+        <div><div class="pt-name">Refugio Comunitario</div><div class="pt-desc">Apoyo anónimo · Verificado por IA</div></div>
+        <i class="ti ti-chevron-right pc-arrow"></i>
+      </div>
+      <div class="pc" onclick="goTo('premium')">
+        <div class="pi" style="background:#e8f8ff"><i class="ti ti-crown" style="font-size:20px;color:var(--blue-deep)"></i></div>
+        <div><div class="pt-name">Cuidado 360º Premium</div><div class="pt-desc">Médicos · Farmacia · Pulsera</div></div>
+        <i class="ti ti-chevron-right pc-arrow"></i>
+      </div>
+    </div>
+    <div class="qbar">
+      <div class="qc"><div class="qi"><i class="ti ti-first-aid-kit" style="font-size:22px;color:var(--coral)"></i></div><div class="qt">Primeros auxilios</div><div class="qd">RCP, atragantamiento...</div></div>
+      <div class="qc"><div class="qi"><i class="ti ti-pill" style="font-size:22px;color:var(--blue-deep)"></i></div><div class="qt">Farmacia Cero Colas</div><div class="qd">Recetas sin espera</div></div>
+    </div>
+  </div>
+  <div class="bnav">
+    <div class="ni active" onclick="goTo('home')"><i class="ti ti-home-2"></i><span>Inicio</span></div>
+    <div class="ni" onclick="goTo('triage')"><i class="ti ti-heartbeat"></i><span>IA Salud</span></div>
+    <div class="ni" onclick="goTo('community')"><i class="ti ti-heart-handshake"></i><span>Comunidad</span></div>
+    <div class="ni" onclick="goTo('premium')"><i class="ti ti-crown"></i><span>Premium</span></div>
+  </div>
+</div>
+
+<!-- ══ TRIAGE ══ -->
+<div class="sp" id="page-triage">
+  <div class="sb w" style="background:var(--blue-deep)">9:41 <span style="margin-left:auto">📶 🔋</span></div>
+  <div class="t-hdr">
+    <div style="display:flex;align-items:center">
+      <span class="back-btn" onclick="goTo('home')">←</span>
+      <div><h2>IA Salud</h2><p>Triaje · Primeros auxilios · No sustituye al médico</p></div>
+    </div>
+  </div>
+  <div style="display:flex;background:#fff;border-bottom:.5px solid var(--border);flex-shrink:0">
+    <div class="ct active" id="tt-triage" onclick="swTriageTab('triage')" style="border-bottom-color:var(--blue);color:var(--blue)">Triaje IA</div>
+    <div class="ct" id="tt-aux" onclick="swTriageTab('aux')">Primeros auxilios</div>
+  </div>
+
+  <!-- TRIAJE sub-panel -->
+  <div id="tp-triage" style="display:flex;flex-direction:column;flex:1;overflow:hidden">
+    <div class="pscr" style="background:var(--surface)">
+      <div class="t-body">
+        <div class="ai-bbl">
+          <div class="ai-badge"><span>🤖</span> VitalIA · Protocolo clínico</div>
+          Hola María. Voy a ayudarte a evaluar tus síntomas. <strong>¿Cuál es tu motivo de consulta principal?</strong>
+          <div class="chips" id="motivo-chips">
+            <span class="chip" onclick="selectMotivo(this)">Dolor</span>
+            <span class="chip" onclick="selectMotivo(this)">Fiebre</span>
+            <span class="chip" onclick="selectMotivo(this)">Dificultad respiratoria</span>
+            <span class="chip" onclick="selectMotivo(this)">Síntoma neurológico</span>
+            <span class="chip" onclick="selectMotivo(this)">Malestar digestivo</span>
+          </div>
+        </div>
+        <div class="u-bbl" id="u-motivo" style="display:none">Tengo dolor de cabeza intenso y el cuello rígido.</div>
+        <div class="ai-bbl" id="ai-step2" style="display:none">
+          <div class="ai-badge"><span>🤖</span> VitalIA · Anamnesis dirigida</div>
+          Entendido. Cefalea con rigidez de nuca requiere valoración cuidadosa. <strong>¿Cuándo comenzaron?</strong>
+          <div class="chips" id="onset-chips">
+            <span class="chip" onclick="selectOnset(this)">Hace minutos (inicio brusco)</span>
+            <span class="chip" onclick="selectOnset(this)">Hace horas</span>
+            <span class="chip" onclick="selectOnset(this)">Hace días</span>
+          </div>
+        </div>
+        <div class="u-bbl" id="u-onset" style="display:none">Empezó hace unas horas, de forma progresiva.</div>
+        <div class="ai-bbl" id="ai-step3" style="display:none">
+          <div class="ai-badge"><span>🤖</span> VitalIA · Síntomas de alarma</div>
+          ¿Presentas alguno de estos signos?
+          <div class="chips" id="alarm-chips">
+            <span class="chip" onclick="toggleAlarm(this)">Fiebre &gt;38.5°C</span>
+            <span class="chip" onclick="toggleAlarm(this)">Sensibilidad a la luz</span>
+            <span class="chip" onclick="toggleAlarm(this)">Náuseas o vómitos</span>
+            <span class="chip" onclick="toggleAlarm(this)">Confusión o desorientación</span>
+            <span class="chip" onclick="toggleAlarm(this)">Erupción cutánea</span>
+            <span class="chip sel" onclick="toggleAlarm(this)">Ninguno</span>
+          </div>
+        </div>
+        <div class="sev-card" id="sev-card" style="display:none">
+          <div class="sev-lbl"><span>Intensidad del dolor (1–10)</span><span id="sev-val">5</span></div>
+          <div class="sev-row" id="sev-row">
+            <div class="sd" style="background:#f0c040" onclick="setSev(1)"></div>
+            <div class="sd" style="background:#f0c040" onclick="setSev(2)"></div>
+            <div class="sd" style="background:#e89020" onclick="setSev(3)"></div>
+            <div class="sd" style="background:#e89020" onclick="setSev(4)"></div>
+            <div class="sd" style="background:var(--blue)" onclick="setSev(5)"></div>
+            <div class="sd" onclick="setSev(6)"></div>
+            <div class="sd" onclick="setSev(7)"></div>
+            <div class="sd" onclick="setSev(8)"></div>
+            <div class="sd" onclick="setSev(9)"></div>
+            <div class="sd" onclick="setSev(10)"></div>
+          </div>
+          <div class="sev-scale"><span>leve</span><span>moderado</span><span>muy intenso</span></div>
+        </div>
+        <div id="alerta" style="display:none">
+          <div class="alerta-box amarillo" id="alerta-box">
+            <div class="a-title" id="a-title">⚠️ Triaje: atención preferente hoy</div>
+            <div class="a-body" id="a-body"></div>
+          </div>
+          <div id="alerta-disclaimer" style="font-size:10.5px;color:var(--text-muted);margin-top:6px;padding-top:6px;border-top:.5px solid rgba(0,0,0,.08)">ℹ️ Esta orientación no sustituye al diagnóstico médico.</div>
+          <div id="alerta-remedios" style="display:none;margin-top:8px;background:#fff;border-radius:11px;padding:11px 13px;border:.5px solid var(--border)">
+            <div style="font-size:11.5px;font-weight:600;color:var(--text);margin-bottom:6px">💊 Puedes hacer ahora mismo</div>
+            <div id="remedios-list" style="font-size:12px;color:#444;line-height:1.7"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="t-inp-row">
+      <input class="t-inp" placeholder="Describe otro síntoma..." id="t-inp"/>
+      <button class="t-snd" onclick="sendTriajeMsg()"><i class="ti ti-send"></i></button>
+    </div>
+  </div>
+
+  <!-- PRIMEROS AUXILIOS sub-panel -->
+  <div id="tp-aux" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+    <div class="pscr" style="background:var(--surface)">
+      <div style="padding:12px;display:flex;flex-direction:column;gap:8px" id="aux-list">
+        <!-- cards injected by JS -->
+      </div>
+      <div id="aux-detail" style="display:none;padding:12px"></div>
+    </div>
+  </div>
+
+  <div class="bnav">
+    <div class="ni" onclick="goTo('home')"><i class="ti ti-home-2"></i><span>Inicio</span></div>
+    <div class="ni active" onclick="goTo('triage')"><i class="ti ti-heartbeat"></i><span>IA Salud</span></div>
+    <div class="ni" onclick="goTo('community')"><i class="ti ti-heart-handshake"></i><span>Comunidad</span></div>
+    <div class="ni" onclick="goTo('premium')"><i class="ti ti-crown"></i><span>Premium</span></div>
+  </div>
+</div>
+
+<!-- ══ COMMUNITY ══ -->
+<div class="sp" id="page-community">
+  <div class="sb w" style="background:var(--purple)">9:41 <span style="margin-left:auto">📶 🔋</span></div>
+  <div class="c-hdr">
+    <div style="display:flex;align-items:center">
+      <span class="back-btn" onclick="goTo('home')">←</span>
+      <div><h2>Refugio Comunitario</h2><p>Seudónimo · Verificado por IA y profesionales</p></div>
+    </div>
+  </div>
+  <div class="safe-strip"><i class="ti ti-shield-check" style="font-size:14px"></i> Tu identidad está protegida · Solo profesionales ven tu nombre real</div>
+  <div class="c-tabs">
+    <div class="ct active" onclick="swTab(this,'tf')">Para ti</div>
+    <div class="ct" onclick="swTab(this,'ts')">Mi progreso</div>
+    <div class="ct" onclick="swTab(this,'tobj')">Mis objetivos</div>
+    <div class="ct" onclick="swTab(this,'tg')">Grupos</div>
+    <div class="ct" onclick="swTab(this,'tr')">Recursos</div>
+  </div>
+  <div class="pscr" style="background:var(--surface)">
+
+    <!-- TAB: Para ti -->
+    <div id="tf" class="c-feed">
+      <div class="aff-card">
+        <div class="aff-title">✨ Afirmación de hoy</div>
+        <div class="aff-text">"Cada día que decides seguir adelante es una victoria que mereces celebrar."</div>
+      </div>
+      <div class="post">
+        <div class="ph"><div class="av" style="background:var(--purple-light)">🦊</div><div><div class="un">Nómada del Alma</div></div><div class="pt2">hace 2h</div></div>
+        <span class="tag anx"># ansiedad</span>
+        <div class="pbody">Ayer recaí. No fue el día que esperaba, pero esta mañana me levanté. El camino no es recto y está bien así.</div>
+        <div class="pact"><span class="pact-btn"><i class="ti ti-message-circle" style="font-size:14px"></i> 7 respuestas</span><span class="pact-btn" style="margin-left:auto;font-size:11px;color:var(--green)"><i class="ti ti-shield-check" style="font-size:12px"></i> Verificado</span></div>
+      </div>
+      <div class="post">
+        <div class="ph"><div class="av" style="background:var(--green-light)">🌊</div><div><div class="un">RíoDePaz</div></div><div class="pt2">hace 5h</div></div>
+        <span class="tag rec"># recuperación</span>
+        <div class="pbody">3 meses sin beber. Esta comunidad lo ha hecho posible. Gracias a todos los que estáis aquí.</div>
+        <div class="pact"><span class="pact-btn"><i class="ti ti-message-circle" style="font-size:14px"></i> 12 respuestas</span><span class="pact-btn" style="margin-left:auto;font-size:11px;color:var(--green)"><i class="ti ti-shield-check" style="font-size:12px"></i> Verificado</span></div>
+      </div>
+      <div class="post">
+        <div class="ph"><div class="av" style="background:var(--amber-light)">🌳</div><div><div class="un">Árbol Fuerte</div></div><div class="pt2">hace 1d</div></div>
+        <span class="tag due"># duelo</span>
+        <div class="pbody">Reconocer el dolor es el primer paso. Hoy salí a caminar. Pequeños pasos, cada día.</div>
+        <div class="pact"><span class="pact-btn"><i class="ti ti-message-circle" style="font-size:14px"></i> 4 respuestas</span><span class="pact-btn" style="margin-left:auto;font-size:11px;color:var(--green)"><i class="ti ti-shield-check" style="font-size:12px"></i> Verificado</span></div>
+      </div>
+    </div>
+
+    <!-- TAB: Mi progreso -->
+    <div id="ts" class="c-feed" style="display:none">
+      <div class="aff-card">
+        <div class="aff-title">✨ Para ti hoy</div>
+        <div class="aff-text">"No tienes que ser perfecta. Solo tienes que seguir intentándolo."</div>
+      </div>
+      <div class="streak-card">
+        <div class="str-hdr">
+          <div><div class="str-title">Racha semanal</div><div style="font-size:11px;color:var(--text-hint);margin-top:1px">¡5 días · Sigue así!</div></div>
+          <div><div class="str-count">5</div><div class="str-sub">días</div></div>
+        </div>
+        <div class="week-dots">
+          <div class="wd done"><span style="font-size:8px">L</span><span>✓</span></div>
+          <div class="wd done"><span style="font-size:8px">M</span><span>✓</span></div>
+          <div class="wd done"><span style="font-size:8px">X</span><span>✓</span></div>
+          <div class="wd done"><span style="font-size:8px">J</span><span>✓</span></div>
+          <div class="wd today"><span style="font-size:8px">V</span><span style="font-size:8px">hoy</span></div>
+          <div class="wd empty"><span style="font-size:8px">S</span></div>
+          <div class="wd empty"><span style="font-size:8px">D</span></div>
+        </div>
+      </div>
+
+      <div class="logros-card">
+        <div class="logros-title">Mis logros de hoy</div>
+        <div id="chk-list">
+          <div class="chk-item" onclick="toggleChk(this)">
+            <div class="chk-box done"><i class="ti ti-check" style="font-size:11px;color:#fff"></i></div>
+            <span class="chk-lbl done">Me levanté a la hora que me propuse</span>
+          </div>
+          <div class="chk-item" onclick="toggleChk(this)">
+            <div class="chk-box"></div><span class="chk-lbl">Salí a caminar</span>
+          </div>
+          <div class="chk-item" onclick="toggleChk(this)">
+            <div class="chk-box"></div><span class="chk-lbl">Bebí suficiente agua</span>
+          </div>
+          <div class="chk-item" onclick="toggleChk(this)">
+            <div class="chk-box"></div><span class="chk-lbl">Hablé con alguien</span>
+          </div>
+          <div class="chk-item" onclick="toggleChk(this)">
+            <div class="chk-box done"><i class="ti ti-check" style="font-size:11px;color:#fff"></i></div>
+            <span class="chk-lbl done">Fui a entrenar</span>
+          </div>
+        </div>
+        <button class="add-logro-btn" onclick="toggleAddPanel()">
+          <i class="ti ti-plus" style="font-size:14px"></i> Añadir logro
+        </button>
+        <div class="add-panel" id="add-panel">
+          <div style="display:flex;gap:6px;margin-top:2px">
+            <input type="text" id="logro-input" placeholder="Escribe tu logro..." style="flex:1;border:.5px solid #ddd;border-radius:20px;padding:7px 12px;font-size:12px;outline:none;font-family:var(--font);background:var(--surface)" maxlength="60" />
+            <button onclick="addLogroTexto()" style="width:34px;height:34px;background:var(--purple);border:none;border-radius:50%;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">+</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TAB: Mis objetivos -->
+    <div id="tobj" class="c-feed" style="display:none">
+
+      <!-- Objetivo existente: Cero humo -->
+      <div class="abs-card" id="obj-0">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
+          <div class="abs-title">Objetivo cero humo</div>
+          <span style="font-size:10px;color:var(--purple-mid);background:var(--purple-light);padding:2px 8px;border-radius:8px">activo</span>
+        </div>
+        <div class="abs-sub">¿Cómo ha ido hoy?</div>
+        <div class="abs-main-row">
+          <div class="abs-btn" id="abs-yes" onclick="setAbs('yes',0)">
+            <div class="abs-ico">✅</div>
+            <div class="abs-lbl">Lo conseguí</div>
+          </div>
+          <div class="abs-btn" id="abs-no" onclick="setAbs('no',0)">
+            <div class="abs-ico">😔</div>
+            <div class="abs-lbl">Hoy no pudo ser</div>
+          </div>
+          <div class="abs-counters">
+            <div class="abs-c"><div class="abs-n">47</div><div class="abs-l">días</div></div>
+          </div>
+        </div>
+        <div class="abs-quote" id="abs-quote">"Lo que has construido en 47 días es tuyo para siempre."</div>
+        <div class="abs-expand" onclick="toggleCal()">
+          <span class="abs-expand-lbl">Ver mi año completo</span>
+          <i class="ti ti-chevron-down" id="cal-icon"></i>
+        </div>
+        <div class="cal-wrap" id="cal-wrap"></div>
+      </div>
+
+      <!-- Contenedor de objetivos extra añadidos -->
+      <div id="objetivos-extra"></div>
+
+      <!-- Añadir objetivo -->
+      <button class="add-logro-btn" onclick="toggleAddObj()">
+        <i class="ti ti-plus" style="font-size:14px"></i> Añadir otro objetivo
+      </button>
+      <div class="add-panel" id="add-obj-panel">
+        <div style="display:flex;gap:6px;margin-top:2px">
+          <input type="text" id="obj-input" placeholder="Describe tu objetivo..." style="flex:1;border:.5px solid #ddd;border-radius:20px;padding:7px 12px;font-size:12px;outline:none;font-family:var(--font);background:var(--surface)" maxlength="60" />
+          <button onclick="addObjetivo()" style="width:34px;height:34px;background:var(--purple);border:none;border-radius:50%;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">+</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Grupos -->
+    <div id="tg" class="c-feed" style="display:none">
+      <div class="post" style="display:flex;align-items:center;gap:10px"><span style="font-size:22px">💙</span><div><div class="un">Ansiedad y estrés</div><div style="font-size:11px;color:var(--text-hint)">234 personas · Activo ahora</div></div><span style="margin-left:auto;font-size:12.5px;color:var(--purple);font-weight:600;cursor:pointer">Unirse</span></div>
+      <div class="post" style="display:flex;align-items:center;gap:10px"><span style="font-size:22px">🌱</span><div><div class="un">Recuperación</div><div style="font-size:11px;color:var(--text-hint)">118 personas · Activo ahora</div></div><span style="margin-left:auto;font-size:12.5px;color:var(--purple);font-weight:600;cursor:pointer">Unirse</span></div>
+      <div class="post" style="display:flex;align-items:center;gap:10px"><span style="font-size:22px">🕊️</span><div><div class="un">Duelo y pérdida</div><div style="font-size:11px;color:var(--text-hint)">89 personas</div></div><span style="margin-left:auto;font-size:12.5px;color:var(--purple);font-weight:600;cursor:pointer">Unirse</span></div>
+      <div class="post" style="display:flex;align-items:center;gap:10px"><span style="font-size:22px">❤️</span><div><div class="un">Cuidadores y familias</div><div style="font-size:11px;color:var(--text-hint)">156 personas</div></div><span style="margin-left:auto;font-size:12.5px;color:var(--purple);font-weight:600;cursor:pointer">Unirse</span></div>
+    </div>
+
+    <!-- TAB: Recursos -->
+    <div id="tr" class="c-feed" style="display:none">
+      <div style="font-size:10.5px;font-weight:600;color:var(--text-muted);padding:4px 0 2px;letter-spacing:.5px">GRATUITO</div>
+      <div class="post" style="display:flex;align-items:center;gap:10px"><span style="font-size:22px">📞</span><div><div class="un">Teléfono de la Esperanza</div><div style="font-size:11px;color:var(--text-hint)">717 003 717 · 24h gratuito</div></div><span style="margin-left:auto;font-size:17px;color:var(--blue);cursor:pointer">→</span></div>
+      <div class="post" style="display:flex;align-items:center;gap:10px"><span style="font-size:22px">🚑</span><div><div class="un">Cruz Roja España</div><div style="font-size:11px;color:var(--text-hint)">Apoyo psicosocial</div></div><span style="margin-left:auto;font-size:17px;color:var(--blue);cursor:pointer">→</span></div>
+      <div style="font-size:10.5px;font-weight:600;color:var(--text-muted);padding:4px 0 2px;letter-spacing:.5px">PREMIUM</div>
+      <div class="post" style="display:flex;align-items:center;gap:10px"><span style="font-size:22px">🧠</span><div><div class="un">Psicólogo online 24/7</div><div style="font-size:11px;color:var(--text-hint)">Premium · Disponible ahora</div></div><span style="margin-left:auto;font-size:14px;color:var(--purple);font-weight:600;cursor:pointer">↗ Premium</span></div>
+    </div>
+
+  </div>
+  <div class="bnav">
+    <div class="ni" onclick="goTo('home')"><i class="ti ti-home-2"></i><span>Inicio</span></div>
+    <div class="ni" onclick="goTo('triage')"><i class="ti ti-heartbeat"></i><span>IA Salud</span></div>
+    <div class="ni active" onclick="goTo('community')"><i class="ti ti-heart-handshake"></i><span>Comunidad</span></div>
+    <div class="ni" onclick="goTo('premium')"><i class="ti ti-crown"></i><span>Premium</span></div>
+  </div>
+</div>
+
+<!-- ══ PREMIUM ══ -->
+<div class="sp" id="page-premium">
+  <div class="sb w" style="background:var(--blue-deep)">9:41 <span style="margin-left:auto">📶 🔋</span></div>
+  <div class="p-hdr">
+    <div style="display:flex;align-items:center">
+      <span class="back-btn" onclick="goTo('home')">←</span>
+      <div><h2>Cuidado Premium 360º</h2><p>Con o sin pulsera · Elige tu plan</p></div>
+    </div>
+  </div>
+  <div class="pscr" style="background:var(--surface)">
+    <div class="p-body">
+      <div class="hw-toggle" id="hw-toggle">
+        <div class="tw-opt active" onclick="setHW(this,false)">Sin pulsera</div>
+        <div class="tw-opt" onclick="setHW(this,true)">Con pulsera</div>
+      </div>
+      <div class="hw-banner" id="hw-banner" style="display:none">
+        <div class="hw-banner-ico">⌚</div>
+        <div class="hw-banner-txt"><strong>Pulsera Conecta SOS incluida</strong> · GPS 4G + SIM + botón SOS · Pago único al activar · Tuya para siempre</div>
+      </div>
+      <div class="plan-tabs">
+        <div class="ptab sel" onclick="selPlan(this,'individual')">
+          <div class="ptab-name">Individual</div>
+          <div class="ptab-price" id="pp-ind">14€</div>
+          <div class="ptab-sub">/mes · 1 persona</div>
+        </div>
+        <div class="ptab" onclick="selPlan(this,'duo')">
+          <div class="ptab-name">Dúo</div>
+          <div class="ptab-price" id="pp-duo">25€</div>
+          <div class="ptab-sub">/mes · 2 personas</div>
+          <div class="ptab-badge" id="pb-duo">–11%</div>
+        </div>
+        <div class="ptab" onclick="selPlan(this,'familia')">
+          <div class="ptab-name">Familia</div>
+          <div class="ptab-price" id="pp-fam">35€</div>
+          <div class="ptab-sub">/mes · hasta 4</div>
+          <div class="ptab-badge" id="pb-fam">–38%</div>
+        </div>
+      </div>
+      <div class="plan-detail">
+        <div class="pd-title" id="pd-title">Plan Individual sin pulsera · 14 €/mes</div>
+        <div id="pd-feats">
+          <div class="feat-row"><span class="feat-icon">🩺</span><span>Hasta 5 consultas médico/psicólogo al mes</span></div>
+          <div class="feat-row"><span class="feat-icon">💊</span><span>Farmacia Cero Colas · gestión de recetas</span></div>
+          <div class="feat-row"><span class="feat-icon">🤖</span><span>Triaje IA prioritario + historial clínico</span></div>
+          <div class="feat-row"><span class="feat-icon">🌿</span><span>Comunidad premium · grupos especializados</span></div>
+        </div>
+        <div class="consult-box" id="consult-box">📋 Consultas adicionales a partir de la 6ª: 8 €/consulta. El uso medio real es de 1–2 consultas al mes.</div>
+        <div class="note-box" id="pd-note">Ideal para personas que quieren acceso a médicos online sin necesitar el dispositivo físico. Puedes añadir la pulsera en cualquier momento.</div>
+      </div>
+      <button class="p-cta" id="p-cta-btn">Contratar Plan Individual sin pulsera · 14€/mes →</button>
+    </div>
+  </div>
+  <div class="bnav">
+    <div class="ni" onclick="goTo('home')"><i class="ti ti-home-2"></i><span>Inicio</span></div>
+    <div class="ni" onclick="goTo('triage')"><i class="ti ti-heartbeat"></i><span>IA Salud</span></div>
+    <div class="ni" onclick="goTo('community')"><i class="ti ti-heart-handshake"></i><span>Comunidad</span></div>
+    <div class="ni active" onclick="goTo('premium')"><i class="ti ti-crown"></i><span>Premium</span></div>
+  </div>
+</div>
+
+</div><!-- /screen -->
+</div><!-- /phone -->
+</div><!-- /phone-wrap -->
+
+
+
+<script>
+const PAGES = ['home','triage','community','premium'];
+
+function goTo(p) {
+  PAGES.forEach(x => {
+    const pg = document.getElementById('page-' + x);
+    if (pg) pg.classList.remove('active');
+    const pi = document.getElementById('pill-' + x);
+    if (pi) pi.classList.remove('active');
+  });
+  const pg = document.getElementById('page-' + p);
+  if (pg) pg.classList.add('active');
+  const pi = document.getElementById('pill-' + p);
+  if (pi) pi.classList.add('active');
+}
+
+// ── SOS: longpress con cuenta atrás ──
+let sosTimer = null, sosCountdown = null, sosCount = 2;
+function startSOS(e) {
+  if (e) e.preventDefault();
+  const b = document.getElementById('sos-btn');
+  sosCount = 2;
+  b.querySelector('.sos-sub').textContent = 'MANTÉN ' + sosCount + 's...';
+  sosCountdown = setInterval(() => {
+    sosCount--;
+    if (sosCount > 0) {
+      b.querySelector('.sos-sub').textContent = 'MANTÉN ' + sosCount + 's...';
+    } else {
+      clearInterval(sosCountdown);
+      fireSOS();
+    }
+  }, 1000);
+}
+function cancelSOS() {
+  clearInterval(sosCountdown);
+  const b = document.getElementById('sos-btn');
+  b.style.background = 'var(--red-sos)';
+  b.style.boxShadow = '0 0 0 10px rgba(212,46,10,.18)';
+  b.querySelector('.sos-lbl').textContent = 'SOS';
+  b.querySelector('.sos-sub').textContent = 'PULSA AQUÍ';
+}
+function fireSOS() {
+  const b = document.getElementById('sos-btn');
+  b.style.background = '#ff1800';
+  b.style.boxShadow = '0 0 0 18px rgba(255,24,0,.3)';
+  b.querySelector('.sos-lbl').textContent = '¡SOS!';
+  b.querySelector('.sos-sub').textContent = 'ALERTANDO...';
+  setTimeout(() => cancelSOS(), 3000);
+}
+
+// ── TRIAGE TABS ──
+function swTriageTab(tab) {
+  ['triage','aux'].forEach(t => {
+    document.getElementById('tt-' + t).classList.remove('active');
+    document.getElementById('tt-' + t).style.color = '';
+    document.getElementById('tt-' + t).style.borderBottomColor = '';
+    document.getElementById('tp-' + t).style.display = 'none';
+  });
+  document.getElementById('tt-' + tab).classList.add('active');
+  document.getElementById('tt-' + tab).style.color = 'var(--blue-deep)';
+  document.getElementById('tt-' + tab).style.borderBottomColor = 'var(--blue-deep)';
+  document.getElementById('tp-' + tab).style.display = 'flex';
+  if (tab === 'aux' && !auxBuilt) { buildAux(); auxBuilt = true; }
+}
+
+function scrollTriaje() {
+  // intentionally no-op: user controls scroll
+}
+
+function showTyping(afterEl) {
+  const t = document.createElement('div');
+  t.className = 'ai-bbl typing-indicator';
+  t.id = 'typing-dots';
+  t.innerHTML = '<span></span><span></span><span></span>';
+  afterEl.parentNode.insertBefore(t, afterEl.nextSibling);
+  scrollTriaje();
+  return t;
+}
+
+function removeTyping() {
+  const t = document.getElementById('typing-dots');
+  if (t) t.remove();
+}
+
+// ── TRIAGE LOGIC ──
+let sevVal = 5, motDone = false, onsDone = false, alarms = [];
+
+function resetTriage() {
+  motDone = false; onsDone = false; alarms = []; sevVal = 5;
+  ['u-motivo','ai-step2','u-onset','ai-step3','sev-card','alerta'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+  document.querySelectorAll('#motivo-chips .chip, #onset-chips .chip, #alarm-chips .chip').forEach(c => c.classList.remove('sel'));
+  document.querySelector('#alarm-chips .chip:last-child').classList.add('sel');
+  document.getElementById('sev-val').textContent = '5';
+  document.querySelectorAll('.sd').forEach((d, i) => {
+    d.style.background = i < 5 ? (i < 2 ? '#f0c040' : i < 4 ? '#e89020' : 'var(--blue-deep)') : '#e8e8e8';
+  });
+  scrollTriaje();
+}
+
+function selectMotivo(el) {
+  if (motDone) return; motDone = true;
+  document.querySelectorAll('#motivo-chips .chip').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+  const typing = showTyping(el.closest('.ai-bbl'));
+  setTimeout(() => {
+    removeTyping();
+    document.getElementById('u-motivo').style.display = 'block';
+    const t2 = showTyping(document.getElementById('u-motivo'));
+    setTimeout(() => {
+      removeTyping();
+      document.getElementById('ai-step2').style.display = 'block';
+      const t3 = showTyping(document.getElementById('ai-step2'));
+      setTimeout(() => {
+        removeTyping();
+        document.getElementById('sev-card').style.display = 'block';
+        updateAlerta();
+        scrollTriaje();
+      }, 600);
+    }, 500);
+  }, 700);
+}
+
+function selectOnset(el) {
+  if (onsDone) return; onsDone = true;
+  document.querySelectorAll('#onset-chips .chip').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+  const t = showTyping(el.closest('.ai-bbl'));
+  setTimeout(() => {
+    removeTyping();
+    document.getElementById('u-onset').style.display = 'block';
+    const t2 = showTyping(document.getElementById('u-onset'));
+    setTimeout(() => {
+      removeTyping();
+      document.getElementById('ai-step3').style.display = 'block';
+      scrollTriaje();
+    }, 600);
+  }, 700);
+}
+
+function toggleAlarm(el) {
+  const txt = el.textContent.trim();
+  if (txt === 'Ninguno') {
+    alarms = [];
+    document.querySelectorAll('#alarm-chips .chip').forEach(c => c.classList.remove('sel'));
+    el.classList.add('sel');
+  } else {
+    document.querySelector('#alarm-chips .chip:last-child').classList.remove('sel');
+    const i = alarms.indexOf(txt);
+    if (i > -1) { alarms.splice(i, 1); el.classList.remove('sel'); }
+    else { alarms.push(txt); el.classList.add('sel'); }
+  }
+  updateAlerta();
+}
+
+function setSev(v) {
+  sevVal = v;
+  document.getElementById('sev-val').textContent = v;
+  document.querySelectorAll('.sd').forEach((d, i) => {
+    d.style.background = i < v ? (v <= 3 ? '#f0c040' : v <= 6 ? '#e89020' : '#d42e0a') : '#e8e8e8';
+  });
+  updateAlerta();
+}
+
+function updateAlerta() {
+  const wrap = document.getElementById('alerta');
+  const box = document.getElementById('alerta-box');
+  const title = document.getElementById('a-title');
+  const body = document.getElementById('a-body');
+  const remediosWrap = document.getElementById('alerta-remedios');
+  const remediosList = document.getElementById('remedios-list');
+  wrap.style.display = 'block';
+  const danger = alarms.some(s => ['Fiebre >38.5°C','Sensibilidad a la luz','Confusión o desorientación','Erupción cutánea'].includes(s));
+  if (danger) {
+    box.className = 'alerta-box rojo';
+    title.textContent = '🚨 Signos de alarma — llama al 112 o acude a urgencias';
+    body.textContent = 'Los síntomas combinados con rigidez de nuca pueden indicar una causa grave. Llama al 112 o dirígete a urgencias hospitalarias. No esperes.';
+    remediosWrap.style.display = 'none';
+  } else if (sevVal >= 8) {
+    box.className = 'alerta-box rojo';
+    title.textContent = '🔴 Dolor muy intenso — consulta médica hoy';
+    body.textContent = 'Dolor 8/10 o superior. No recomendamos automedicación. Solicita consulta con el médico de la app o acude a tu centro de salud hoy.';
+    remediosWrap.style.display = 'none';
+  } else if (sevVal >= 5) {
+    box.className = 'alerta-box amarillo';
+    title.textContent = '🟡 Molestia moderada — puedes manejarlo en casa';
+    body.textContent = 'Sin señales de alarma activas. Prueba primero con medidas básicas. Si en 4–6h no mejora, usa la consulta online.';
+    remediosWrap.style.display = 'block';
+    remediosList.innerHTML =
+      '• <strong>Paracetamol 650mg</strong> · sin receta · cada 6–8h<br>' +
+      '• <strong>Ibuprofeno 400mg</strong> si no tienes alergia · con comida · cada 8h<br>' +
+      '• Oscuridad, silencio e hidratación (2 vasos de agua ahora)<br>' +
+      '• Frío local en nuca o frente con paño húmedo frío<br>' +
+      '<span style="font-size:11px;color:var(--text-muted);margin-top:4px;display:block">Si en 6h no mejora o aparecen nuevos síntomas → consulta online</span>';
+  } else {
+    box.className = 'alerta-box verde';
+    title.textContent = '🟢 Síntomas leves — manejo en casa';
+    body.textContent = 'No hay señales de alarma. Puedes tratarlo con medidas básicas sin necesidad de consulta médica inmediata.';
+    remediosWrap.style.display = 'block';
+    remediosList.innerHTML =
+      '• <strong>Paracetamol 500mg</strong> si hay molestia · máx 3 veces al día<br>' +
+      '• Descanso en habitación tranquila y oscura<br>' +
+      '• Agua o infusión de jengibre · evita pantallas 1–2h<br>' +
+      '<span style="font-size:11px;color:var(--text-muted);margin-top:4px;display:block">Si no mejora en 24h → consulta con tu médico</span>';
+  }
+  scrollTriaje();
+}
+
+function sendTriajeMsg() {
+  const inp = document.getElementById('t-inp');
+  const txt = inp.value.trim();
+  if (!txt) return;
+  inp.value = '';
+  const body = document.querySelector('#tp-triage .t-body');
+  const ubbl = document.createElement('div');
+  ubbl.className = 'u-bbl';
+  ubbl.textContent = txt;
+  body.appendChild(ubbl);
+  scrollTriaje();
+  const typing = document.createElement('div');
+  typing.className = 'ai-bbl typing-indicator';
+  typing.innerHTML = '<span></span><span></span><span></span>';
+  body.appendChild(typing);
+  scrollTriaje();
+  setTimeout(() => {
+    typing.remove();
+    const resp = document.createElement('div');
+    resp.className = 'ai-bbl';
+    resp.innerHTML = '<div class="ai-badge"><span>🤖</span> VitalIA</div>Anotado. Ten en cuenta este síntoma junto con los anteriores. Si la situación cambia o empeora, ajusta la escala de intensidad o activa una consulta con el médico.';
+    body.appendChild(resp);
+    scrollTriaje();
+  }, 1200);
+}
+
+// ── PRIMEROS AUXILIOS ──
+let auxBuilt = false;
+const auxData = [
+  {
+    ico: '😵', titulo: 'Desmayo', color: '#e6f1fb', textColor: '#0c447c',
+    pasos: ['Tumba a la persona boca arriba en el suelo, en lugar seguro.','Eleva las piernas por encima del nivel del corazón (30–40 cm).','Afloja la ropa ajustada: cinturón, corbata, cuello.','Asegúrate de que respira con normalidad. Habla con ella.','NO le des agua ni nada por boca hasta que esté completamente consciente.','Si no recupera la consciencia en 1 minuto → llama al 112.'],
+    alerta: '🚨 Llama al 112 si no despierta en 1 min o si hay convulsiones.'
+  },
+  {
+    ico: '🩸', titulo: 'Corte o herida', color: '#faeeda', textColor: '#854f0b',
+    pasos: ['Lávate las manos antes de tocar la herida.','Enjuaga la herida con agua limpia a chorro durante 1–2 minutos.','Presiona firmemente con una gasa o tela limpia durante 5–10 min sin levantar.','Una vez detenida la hemorragia, cubre con apósito estéril.','Cambia el apósito cada 24h y vigila signos de infección.','Si el corte es profundo, no cesa el sangrado o es en cara → urgencias.'],
+    alerta: '🚨 Torniquete solo si el sangrado es masivo y no cesa. Llama al 112.'
+  },
+  {
+    ico: '🔥', titulo: 'Quemadura', color: '#fcebeb', textColor: '#791f1f',
+    pasos: ['Enfría bajo agua fría (no helada) durante 10–20 minutos.','NO uses hielo, mantequilla ni pasta de dientes.','Retira anillos, pulseras o ropa suelta cerca de la zona.','Cubre con film transparente o gasa estéril sin apretar.','No revientes las ampollas si se forman.','Quemaduras en cara, manos o mayores de la palma → urgencias.'],
+    alerta: '🚨 Quemadura química o eléctrica → 112 inmediatamente.'
+  },
+  {
+    ico: '😮', titulo: 'Atragantamiento', color: '#e1f5ee', textColor: '#085041',
+    pasos: ['Si puede toser, anímala a toser con fuerza. No intervengas.','Si no puede toser ni hablar: inclínala hacia adelante.','Da 5 palmadas fuertes entre los omóplatos con el talón de la mano.','Heimlich: rodea su cintura, puño sobre el ombligo, empuja adentro y arriba 5 veces.','Alterna 5 palmadas y 5 compresiones hasta que salga el objeto.','En bebés menores de 1 año: llama al 112 de inmediato.'],
+    alerta: '🚨 Pérdida de consciencia durante el atragantamiento → RCP y 112.'
+  },
+  {
+    ico: '💊', titulo: 'Intoxicación leve', color: '#eeedfe', textColor: '#26215c',
+    pasos: ['Identifica qué ha tomado, cuánto y cuándo. Guarda el envase.','NO induzcas el vómito salvo indicación del Teléfono de Toxicología.','Si está consciente y alerta, mantén la calma y vigila.','Llama al 91 562 04 20 (Toxicología 24h) con el envase en mano.','Si hay pérdida de consciencia o convulsiones → 112.'],
+    alerta: '🚨 Toxicología España 24h: 91 562 04 20'
+  },
+  {
+    ico: '❤️', titulo: 'Parada cardíaca · RCP', color: '#fcebeb', textColor: '#791f1f',
+    pasos: ['Comprueba si responde: sacude los hombros y llama en voz alta.','Si no responde y no respira → llama al 112 AHORA.','Persona boca arriba en superficie dura. Arrodíllate a su lado.','Talón de una mano en el centro del pecho, la otra mano encima.','Presiona fuerte y rápido: 100–120 por minuto, hundir 5–6 cm.','30 compresiones / 2 respiraciones. Si no sabes ventilar, solo compresiones.','No pares hasta que llegue el 112 o la persona respire.'],
+    alerta: '🚨 Por cada minuto sin RCP, la supervivencia baja un 10%.'
+  }
+];
+
+function buildAux() {
+  const list = document.getElementById('aux-list');
+  auxData.forEach((item, idx) => {
+    const card = document.createElement('div');
+    card.style.cssText = 'background:#fff;border-radius:12px;padding:12px 13px;border:.5px solid #e4e4e4;display:flex;align-items:center;gap:10px;cursor:pointer';
+    card.innerHTML = `<div style="width:40px;height:40px;border-radius:10px;background:${item.color};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">${item.ico}</div><div style="flex:1"><div style="font-size:13px;font-weight:600;color:#111">${item.titulo}</div><div style="font-size:11px;color:#888;margin-top:1px">${item.pasos.length} pasos · toca para ver</div></div><span style="color:#ccc;font-size:16px">›</span>`;
+    card.onclick = () => showAuxDetail(idx);
+    list.appendChild(card);
+  });
+}
+
+function showAuxDetail(idx) {
+  const item = auxData[idx];
+  document.getElementById('aux-list').style.display = 'none';
+  const detail = document.getElementById('aux-detail');
+  detail.style.display = 'block';
+  detail.innerHTML = `<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;cursor:pointer" onclick="closeAuxDetail()"><span style="font-size:17px;color:#888">←</span><span style="font-size:12px;color:#888">Volver a Primeros auxilios</span></div><div style="background:${item.color};border-radius:12px;padding:12px;margin-bottom:12px"><div style="font-size:22px;margin-bottom:4px">${item.ico}</div><div style="font-size:16px;font-weight:700;color:${item.textColor}">${item.titulo}</div></div>${item.pasos.map((p,i)=>`<div style="display:flex;gap:10px;margin-bottom:10px;align-items:flex-start"><div style="width:22px;height:22px;border-radius:50%;background:var(--blue-deep);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">${i+1}</div><div style="font-size:12.5px;color:#222;line-height:1.5">${p}</div></div>`).join('')}<div style="background:#fcebeb;border-radius:10px;padding:10px 12px;margin-top:6px;font-size:12px;color:#791f1f;font-weight:500;line-height:1.5">${item.alerta}</div>`;
+}
+
+function closeAuxDetail() {
+  document.getElementById('aux-detail').style.display = 'none';
+  document.getElementById('aux-list').style.display = 'flex';
+  document.getElementById('aux-list').style.flexDirection = 'column';
+}
+
+// ── COMMUNITY ──
+function swTab(el, id) {
+  document.querySelectorAll('.ct').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  ['tf','ts','tobj','tg','tr'].forEach(x => { const d = document.getElementById(x); if (d) d.style.display = 'none'; });
+  document.getElementById(id).style.display = 'flex';
+}
+
+function toggleChk(el) {
+  const box = el.querySelector('.chk-box'), lbl = el.querySelector('.chk-lbl');
+  if (box.classList.contains('done')) { box.classList.remove('done'); box.innerHTML = ''; lbl.classList.remove('done'); }
+  else { box.classList.add('done'); box.innerHTML = '<i class="ti ti-check" style="font-size:11px;color:#fff"></i>'; lbl.classList.add('done'); }
+}
+
+function toggleAddPanel() { document.getElementById('add-panel').classList.toggle('open'); }
+
+function addLogroTexto() {
+  const inp = document.getElementById('logro-input');
+  const txt = inp.value.trim();
+  if (!txt) return;
+  const list = document.getElementById('chk-list');
+  if (Array.from(list.querySelectorAll('.chk-lbl')).some(l => l.textContent.trim() === txt)) { inp.value = ''; return; }
+  const div = document.createElement('div');
+  div.className = 'chk-item';
+  div.onclick = function() { toggleChk(this); };
+  div.innerHTML = `<div class="chk-box"></div><span class="chk-lbl">${txt}</span>`;
+  list.appendChild(div);
+  inp.value = '';
+  document.getElementById('add-panel').classList.remove('open');
+}
+
+function setAbs(v, idx) {
+  const suffix = idx !== undefined ? '-' + idx : '';
+  const yBtn = document.getElementById('abs-yes' + (suffix === '-0' ? '' : suffix));
+  const nBtn = document.getElementById('abs-no' + (suffix === '-0' ? '' : suffix));
+  const quote = document.getElementById('abs-quote' + (suffix === '-0' ? '' : suffix));
+  if (yBtn) yBtn.className = 'abs-btn' + (v === 'yes' ? ' yes' : '');
+  if (nBtn) nBtn.className = 'abs-btn' + (v === 'no' ? ' no' : '');
+  if (quote) quote.textContent = v === 'yes'
+    ? '"Lo que has construido es tuyo para siempre."'
+    : '"Lo importante es el cuadro completo. No te fustigues."';
+}
+
+let calBuilt = false, calOpen = false;
+function toggleCal() {
+  calOpen = !calOpen;
+  const wrap = document.getElementById('cal-wrap'), icon = document.getElementById('cal-icon');
+  wrap.className = 'cal-wrap' + (calOpen ? ' open' : '');
+  icon.style.transform = calOpen ? 'rotate(180deg)' : 'rotate(0)';
+  if (calOpen && !calBuilt) { buildCal(); calBuilt = true; }
+}
+
+function buildCal() {
+  const wrap = document.getElementById('cal-wrap');
+  const months = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const days_in = [31,28,31,30,31,30,31,31,30,31,30,31];
+  const failDays = new Set([10, 28]);
+  let day = 1;
+  months.forEach((m, mi) => {
+    const d = days_in[mi];
+    const mt = document.createElement('div'); mt.className = 'cal-month-title'; mt.textContent = m; wrap.appendChild(mt);
+    const row = document.createElement('div'); row.className = 'cal-days';
+    for (let i = 0; i < d; i++) {
+      const cd = document.createElement('div');
+      const cls = day > 47 ? 'e' : failDays.has(day) ? 'r' : 'g';
+      cd.className = 'cd ' + cls;
+      cd.textContent = cls === 'r' ? '✗' : cls === 'g' ? '✓' : '';
+      row.appendChild(cd); day++;
+    }
+    wrap.appendChild(row);
+  });
+}
+
+// ── PREMIUM ──
+let hwActive = false, curPlan = 'individual';
+const prices = { individual: {no:14,yes:24}, duo: {no:25,yes:42}, familia: {no:35,yes:55} };
+const savings = { duo: {no:'–11%',yes:'–17%'}, familia: {no:'–38%',yes:'–35%'} };
+const details = {
+  individual: {
+    no: { title:'Plan Individual sin pulsera · 14 €/mes', note:'Ideal para personas que quieren acceso a médicos online sin dispositivo físico. La pulsera se puede añadir en cualquier momento por 89€.', feats:['🩺 Hasta 5 consultas médico/psicólogo al mes','💊 Farmacia Cero Colas · gestión de recetas','🤖 Triaje IA prioritario + historial clínico','🌿 Comunidad premium · grupos especializados'] },
+    yes: { title:'Plan Individual con pulsera · 24 €/mes + 89€', note:'La pulsera es tuya para siempre aunque canceles. El plan mensual cubre GPS 4G, SIM, médicos y farmacia.', feats:['⌚ Pulsera Conecta SOS (pago único 89€)','📡 GPS 4G + SIM incluida · siempre activa','🩺 Hasta 5 consultas médico/psicólogo al mes','💊 Farmacia Cero Colas · gestión de recetas','🔔 Alertas GPS a contactos designados'] }
+  },
+  duo: {
+    no: { title:'Plan Dúo sin pulsera · 25 €/mes', note:'Para dos personas. Servicios médicos compartidos con panel unificado.', feats:['🩺 5 consultas/mes por persona (10 totales)','💊 Farmacia Cero Colas compartida','🤖 Triaje IA prioritario para ambos','👥 Panel familiar unificado'] },
+    yes: { title:'Plan Dúo con pulsera · 42 €/mes + 150€', note:'2 pulseras incluidas. Ahorro respecto a dos planes individuales.', feats:['⌚ 2 pulseras Conecta SOS (pago único 150€)','📡 2 líneas GPS 4G + SIM','🩺 5 consultas/mes por persona','💊 Farmacia Cero Colas','👥 Panel familiar unificado'] }
+  },
+  familia: {
+    no: { title:'Plan Familia sin pulsera · 35 €/mes', note:'Hasta 4 personas. Mayor ahorro en servicios médicos para toda la familia.', feats:['🩺 5 consultas/mes por persona (20 totales)','💊 Farmacia Cero Colas para todos','🤖 Triaje IA prioritario','👨‍👩‍👧‍👦 Panel centralizado 4 miembros'] },
+    yes: { title:'Plan Familia con pulsera · 55 €/mes + hardware', note:'Hasta 4 pulseras a 69€/unidad. Ahorro de hasta 41€/mes frente a 4 planes individuales.', feats:['⌚ Hasta 4 pulseras (69€/unidad al contratar)','📡 4 líneas GPS 4G independientes','🩺 5 consultas/mes por persona','💊 Farmacia Cero Colas','👨‍👩‍👧‍👦 Panel centralizado 4 miembros'] }
+  }
+};
+
+function setHW(el, has) {
+  hwActive = has;
+  document.querySelectorAll('.tw-opt').forEach(o => o.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('hw-banner').style.display = has ? 'flex' : 'none';
+  const k = has ? 'yes' : 'no';
+  document.getElementById('pp-ind').textContent = prices.individual[k] + '€';
+  document.getElementById('pp-duo').textContent = prices.duo[k] + '€';
+  document.getElementById('pp-fam').textContent = prices.familia[k] + '€';
+  document.getElementById('pb-duo').textContent = savings.duo[k];
+  document.getElementById('pb-fam').textContent = savings.familia[k];
+  updateDetail();
+}
+
+function selPlan(el, plan) {
+  curPlan = plan;
+  document.querySelectorAll('.ptab').forEach(t => t.classList.remove('sel'));
+  el.classList.add('sel');
+  updateDetail();
+}
+
+function updateDetail() {
+  const k = hwActive ? 'yes' : 'no';
+  const d = details[curPlan][k];
+  document.getElementById('pd-title').textContent = d.title;
+  document.getElementById('pd-note').textContent = d.note;
+  document.getElementById('pd-feats').innerHTML = d.feats.map(f => `<div class="feat-row"><span class="feat-icon">${f.slice(0,2)}</span><span>${f.slice(3)}</span></div>`).join('');
+  const planNames = { individual: 'Individual', duo: 'Dúo', familia: 'Familia' };
+  const p = prices[curPlan][k];
+  const hw = hwActive ? ' + pulsera' : '';
+  document.getElementById('p-cta-btn').textContent = `Contratar Plan ${planNames[curPlan]}${hw} · ${p}€/mes →`;
+}
+
+// ── BOTÓN REINICIAR TRIAJE (se añade al renderizar) ──
+document.addEventListener('DOMContentLoaded', () => {
+  const body = document.querySelector('#tp-triage .t-body');
+  if (body) {
+    const resetBtn = document.createElement('button');
+    resetBtn.style.cssText = 'margin:4px auto 8px;display:block;font-size:12px;color:var(--text-muted);background:none;border:.5px solid #ddd;border-radius:18px;padding:5px 14px;cursor:pointer;font-family:var(--font)';
+    resetBtn.textContent = '↺ Nueva consulta';
+    resetBtn.onclick = resetTriage;
+    body.appendChild(resetBtn);
+  }
+});
+
+function toggleAddObj() {
+  document.getElementById('add-obj-panel').classList.toggle('open');
+}
+
+let objCount = 1;
+function addObjetivo() {
+  const inp = document.getElementById('obj-input');
+  const txt = inp.value.trim();
+  if (!txt) return;
+  inp.value = '';
+  document.getElementById('add-obj-panel').classList.remove('open');
+  const id = 'obj-extra-' + objCount++;
+  const div = document.createElement('div');
+  div.className = 'abs-card';
+  div.id = id;
+  div.style.marginTop = '0';
+  const yId = 'abs-yes-' + id, nId = 'abs-no-' + id, qId = 'abs-quote-' + id;
+  div.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
+      <div class="abs-title">${txt}</div>
+      <span style="font-size:10px;color:var(--purple-mid);background:var(--purple-light);padding:2px 8px;border-radius:8px">nuevo</span>
+    </div>
+    <div class="abs-sub">¿Cómo ha ido hoy?</div>
+    <div class="abs-main-row">
+      <div class="abs-btn" id="${yId}" onclick="setAbsCustom(this,'yes','${qId}')">
+        <div class="abs-ico">✅</div><div class="abs-lbl">Lo conseguí</div>
+      </div>
+      <div class="abs-btn" id="${nId}" onclick="setAbsCustom(this,'no','${qId}')">
+        <div class="abs-ico">😔</div><div class="abs-lbl">Hoy no pudo ser</div>
+      </div>
+    </div>
+    <div class="abs-quote" id="${qId}">Cada día que lo intentas suma.</div>`;
+  document.getElementById('objetivos-extra').appendChild(div);
+}
+
+function setAbsCustom(btn, v, quoteId) {
+  const row = btn.closest('.abs-main-row');
+  row.querySelectorAll('.abs-btn').forEach(b => b.className = 'abs-btn');
+  btn.className = 'abs-btn ' + (v === 'yes' ? 'yes' : 'no');
+  const q = document.getElementById(quoteId);
+  if (q) q.textContent = v === 'yes'
+    ? '"Cada pequeño paso cuenta. Vas bien."'
+    : '"Lo importante es el cuadro completo. No te fustigues."';
+}
+
+</script>
+</body>
+</html>
